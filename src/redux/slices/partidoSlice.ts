@@ -1,37 +1,65 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../utils/axios';
 
-export interface Partido {
+export interface Jugador {
+  _id: string;
+  nombre: string;
+  apellido: string;
+  nombreCompleto: string;
   id: string;
-  equipoLocalId: string;
-  equipoVisitanteId: string;
+}
+
+export interface Gol {
+  jugadorId: Jugador;
+  minuto: number;
+  equipo: 'local' | 'visitante';
+}
+
+export interface Equipo {
+  _id: string;
+  nombre: string;
+  diferenciaGoles?: number | null;
+  id: string;
+}
+
+export interface Zona {
+  _id: string;
+  nombre: string;
+}
+
+export interface TorneoInfo {
+  _id: string;
+  nombre: string;
+}
+
+export interface Partido {
+  _id: string;
+  id: string;
+  torneoId: TorneoInfo;
+  equipoLocal: Equipo;
+  equipoVisitante: Equipo;
+  golesLocal: number;
+  golesVisitante: number;
   fecha: string;
-  hora: string;
-  estadio?: string;
-  golesLocal?: number;
-  golesVisitante?: number;
-  estado: 'programado' | 'en_curso' | 'finalizado' | 'suspendido';
-  torneoId: string;
-  zonaId?: string;
-  jornada?: number;
-  observaciones?: string;
-  equipoLocal?: {
-    id: string;
-    nombre: string;
-    escudo: string;
-  };
-  equipoVisitante?: {
-    id: string;
-    nombre: string;
-    escudo: string;
-  };
+  cancha: string;
+  horario: string;
+  fase: string;
+  estado: 'programado' | 'en_curso' | 'jugado' | 'suspendido';
+  goles: Gol[];
+  golesLocalDetalle: Gol[];
+  golesVisitanteDetalle: Gol[];
+  zonaId?: Zona;
+  tieneResultado: boolean;
+  ganador?: Equipo;
   createdAt: string;
   updatedAt: string;
+  __v: number;
 }
 
 interface PartidoState {
   partidos: Partido[];
   partidosOrdenados: Partido[];
+  partidosByTorneo: Partido[];
   selectedPartido: Partido | null;
   isLoading: boolean;
   error: string | null;
@@ -40,6 +68,7 @@ interface PartidoState {
 const initialState: PartidoState = {
   partidos: [],
   partidosOrdenados: [],
+  partidosByTorneo: [],
   selectedPartido: null,
   isLoading: false,
   error: null,
@@ -78,6 +107,18 @@ export const fetchPartidoById = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Error al cargar partido');
+    }
+  }
+);
+
+export const fetchPartidosByTorneo = createAsyncThunk(
+  'partidos/fetchPartidosByTorneo',
+  async (torneoId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/partidos/torneo/${torneoId}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Error al cargar partidos del torneo');
     }
   }
 );
@@ -167,6 +208,19 @@ const partidoSlice = createSlice({
         state.selectedPartido = action.payload;
       })
       .addCase(fetchPartidoById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Fetch partidos by torneo
+      .addCase(fetchPartidosByTorneo.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchPartidosByTorneo.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.partidosByTorneo = action.payload.data || [];
+      })
+      .addCase(fetchPartidosByTorneo.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

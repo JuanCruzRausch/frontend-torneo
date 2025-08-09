@@ -8,7 +8,7 @@ export interface Torneo {
   descripcion: string;
   fechaInicio: string;
   fechaFin: string;
-  estado: 'activo' | 'inactivo' | 'finalizado';
+  estado: 'activo' | 'inactivo' | 'finalizado' | 'pendiente';
   formato?: string;
   zonas?: any[];
   equipos?: any[];
