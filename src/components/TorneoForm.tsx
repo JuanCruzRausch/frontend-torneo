@@ -1,0 +1,244 @@
+'use client';
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useAppDispatch } from '../redux/hooks';
+import { createTorneo, updateTorneo } from '../redux/slices/torneoSlice';
+import type { Torneo } from '../redux/slices/torneoSlice';
+
+const torneoSchema = z.object({
+  nombre: z.string().min(1, 'El nombre es requerido').max(100, 'Máximo 100 caracteres'),
+  descripcion: z.string().min(10, 'Mínimo 10 caracteres').max(500, 'Máximo 500 caracteres'),
+  fechaInicio: z.string().min(1, 'La fecha de inicio es requerida'),
+  fechaFin: z.string().min(1, 'La fecha de fin es requerida'),
+  maxEquipos: z.number().min(4, 'Mínimo 4 equipos').max(64, 'Máximo 64 equipos'),
+  estado: z.enum(['planificado', 'en_curso', 'finalizado']),
+  reglamento: z.string().min(50, 'Mínimo 50 caracteres').max(2000, 'Máximo 2000 caracteres'),
+});
+
+type TorneoFormData = z.infer<typeof torneoSchema>;
+
+interface TorneoFormProps {
+  torneo?: Torneo;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+}
+
+export default function TorneoForm({ torneo, onSuccess, onCancel }: TorneoFormProps) {
+  const dispatch = useAppDispatch();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<TorneoFormData>({
+    resolver: zodResolver(torneoSchema),
+    defaultValues: torneo ? {
+      nombre: torneo.nombre,
+      descripcion: torneo.descripcion,
+      fechaInicio: torneo.fechaInicio.split('T')[0],
+      fechaFin: torneo.fechaFin.split('T')[0],
+      maxEquipos: torneo.maxEquipos,
+      estado: torneo.estado,
+      reglamento: torneo.reglamento,
+    } : {
+      estado: 'planificado',
+      maxEquipos: 16,
+      reglamento: `REGLAMENTO DEL TORNEO
+
+1. DISPOSICIONES GENERALES
+- El torneo se regirá por las reglas oficiales de fútbol
+- Todos los equipos deben cumplir con los requisitos de inscripción
+
+2. FORMATO DE COMPETICIÓN
+- Fase de grupos seguida de eliminación directa
+- Victoria: 3 puntos, Empate: 1 punto, Derrota: 0 puntos
+
+3. REGLAS DE JUEGO
+- Partidos de 90 minutos
+- Máximo 3 cambios por equipo
+- Disciplina según código FIFA
+
+4. FAIR PLAY
+- Se promueve el respeto y deportividad
+- Sanciones por conducta antideportiva`
+    }
+  });
+
+  const handleFormSubmit = async (data: TorneoFormData) => {
+    try {
+      if (torneo) {
+        await dispatch(updateTorneo({ id: torneo.id, ...data })).unwrap();
+      } else {
+        await dispatch(createTorneo(data)).unwrap();
+      }
+      onSuccess?.();
+    } catch (error) {
+      console.error('Error al guardar torneo:', error);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <h2 className="text-xl font-semibold text-gray-900">
+          {torneo ? 'Editar Torneo' : 'Crear Nuevo Torneo'}
+        </h2>
+      </div>
+
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-6">
+        {/* Nombre */}
+        <div>
+          <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+            Nombre del Torneo *
+          </label>
+          <input
+            {...register('nombre')}
+            type="text"
+            id="nombre"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Ej: Copa Primavera 2024"
+          />
+          {errors.nombre && (
+            <p className="mt-1 text-sm text-red-600">{errors.nombre.message}</p>
+          )}
+        </div>
+
+        {/* Descripción */}
+        <div>
+          <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
+            Descripción *
+          </label>
+          <textarea
+            {...register('descripcion')}
+            id="descripcion"
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Describe el torneo, categorías, premios, etc."
+          />
+          {errors.descripcion && (
+            <p className="mt-1 text-sm text-red-600">{errors.descripcion.message}</p>
+          )}
+        </div>
+
+        {/* Fechas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="fechaInicio" className="block text-sm font-medium text-gray-700 mb-2">
+              Fecha de Inicio *
+            </label>
+            <input
+              {...register('fechaInicio')}
+              type="date"
+              id="fechaInicio"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            {errors.fechaInicio && (
+              <p className="mt-1 text-sm text-red-600">{errors.fechaInicio.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="fechaFin" className="block text-sm font-medium text-gray-700 mb-2">
+              Fecha de Fin *
+            </label>
+            <input
+              {...register('fechaFin')}
+              type="date"
+              id="fechaFin"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            {errors.fechaFin && (
+              <p className="mt-1 text-sm text-red-600">{errors.fechaFin.message}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Máximo de equipos y Estado */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="maxEquipos" className="block text-sm font-medium text-gray-700 mb-2">
+              Máximo de Equipos *
+            </label>
+            <select
+              {...register('maxEquipos', { valueAsNumber: true })}
+              id="maxEquipos"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value={8}>8 equipos</option>
+              <option value={16}>16 equipos</option>
+              <option value={24}>24 equipos</option>
+              <option value={32}>32 equipos</option>
+            </select>
+            {errors.maxEquipos && (
+              <p className="mt-1 text-sm text-red-600">{errors.maxEquipos.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-2">
+              Estado *
+            </label>
+            <select
+              {...register('estado')}
+              id="estado"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="planificado">Planificado</option>
+              <option value="en_curso">En Curso</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+            {errors.estado && (
+              <p className="mt-1 text-sm text-red-600">{errors.estado.message}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Reglamento */}
+        <div>
+          <label htmlFor="reglamento" className="block text-sm font-medium text-gray-700 mb-2">
+            Reglamento *
+          </label>
+          <textarea
+            {...register('reglamento')}
+            id="reglamento"
+            rows={8}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+            placeholder="Ingresa las reglas específicas del torneo..."
+          />
+          {errors.reglamento && (
+            <p className="mt-1 text-sm text-red-600">{errors.reglamento.message}</p>
+          )}
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-end space-x-4 pt-6">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Cancelar
+            </button>
+          )}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Guardando...
+              </div>
+            ) : (
+              torneo ? 'Actualizar Torneo' : 'Crear Torneo'
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+} 

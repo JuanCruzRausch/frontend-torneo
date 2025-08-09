@@ -1,0 +1,41 @@
+import { configureStore } from '@reduxjs/toolkit';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { combineReducers } from '@reduxjs/toolkit';
+
+import authSlice from './slices/authSlice';
+import torneoSlice from './slices/torneoSlice';
+import equipoSlice from './slices/equipoSlice';
+import partidoSlice from './slices/partidoSlice';
+import jugadorSlice from './slices/jugadorSlice';
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['auth'], // Only persist auth state
+};
+
+const rootReducer = combineReducers({
+  auth: authSlice,
+  torneos: torneoSlice,
+  equipos: equipoSlice,
+  partidos: partidoSlice,
+  jugadores: jugadorSlice,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    }),
+});
+
+export const persistor = persistStore(store);
+
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = typeof store.dispatch; 
