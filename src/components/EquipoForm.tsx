@@ -308,7 +308,7 @@ export default function EquipoForm({ equipo, onSuccess, onCancel }: EquipoFormPr
                 <ol className="list-decimal list-inside mt-1 space-y-1">
                   <li>Crear una cuenta en Cloudinary</li>
                   <li>Configurar un upload preset público</li>
-                  <li>Reemplazar 'your-cloud-name' con tu cloud name</li>
+                                     <li>Reemplazar &apos;your-cloud-name&apos; con tu Cloud Name</li>
                 </ol>
               </div>
             </div>

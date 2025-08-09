@@ -5,11 +5,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo and Description */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">⚽</span>
-              </div>
-              <span className="text-xl font-bold">Torneos</span>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/logo.png" 
+                alt="Torneo Misionero" 
+                className="w-10 h-10 object-contain"
+              />
+              <span className="text-xl font-bold">Torneo Misionero</span>
             </div>
             <p className="text-gray-300 text-sm">
               Sistema completo de gestión de torneos de fútbol. 

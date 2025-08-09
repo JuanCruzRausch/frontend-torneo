@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gestión de Torneos de Fútbol",
-  description: "Sistema completo de gestión de torneos de fútbol",
+  title: "Torneo Misionero",
+  description: "Sistema completo de gestión del Torneo Misionero de fútbol",
 };
 
 export default function RootLayout({

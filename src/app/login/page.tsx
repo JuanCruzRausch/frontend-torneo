@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { login, clearError } from '../../redux/slices/authSlice';
@@ -42,8 +42,12 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-2xl">⚽</span>
+          <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <img 
+              src="/logo.png" 
+              alt="Torneo Misionero" 
+              className="w-16 h-16 object-contain"
+            />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Iniciar Sesión
