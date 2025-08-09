@@ -40,8 +40,8 @@ export default function EquipoForm({ equipo, onSuccess, onCancel }: EquipoFormPr
     resolver: zodResolver(equipoSchema),
     defaultValues: equipo ? {
       nombre: equipo.nombre,
-      torneoId: equipo.torneoId,
-      color: equipo.color,
+      torneoId: equipo.torneoId._id, // Usar el _id del torneo
+      color: equipo.color || '#000000',
       fundacion: equipo.fundacion || '',
       ciudad: equipo.ciudad || '',
       estadio: equipo.estadio || '',
@@ -69,15 +69,25 @@ export default function EquipoForm({ equipo, onSuccess, onCancel }: EquipoFormPr
     setIsUploadingImage(true);
 
     try {
+      // Verificar que las variables de entorno estén configuradas
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+      if (!cloudName || !uploadPreset) {
+        throw new Error('Configuración de Cloudinary no encontrada. Verifica las variables de entorno.');
+      }
+
+      console.log('Uploading to Cloudinary:', { cloudName, uploadPreset });
+
       // Crear FormData para subir a Cloudinary
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', 'ml_default'); // Debes configurar este preset en Cloudinary
+      formData.append('upload_preset', uploadPreset);
       formData.append('folder', 'torneos/escudos');
 
       // Subir a Cloudinary
       const response = await fetch(
-        'https://api.cloudinary.com/v1_1/your-cloud-name/image/upload', // Reemplaza con tu cloud name
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
         {
           method: 'POST',
           body: formData,
@@ -85,14 +95,17 @@ export default function EquipoForm({ equipo, onSuccess, onCancel }: EquipoFormPr
       );
 
       if (!response.ok) {
-        throw new Error('Error al subir la imagen');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Cloudinary response error:', response.status, errorData);
+        throw new Error(`Error al subir la imagen: ${response.status} ${errorData.error?.message || 'Error desconocido'}`);
       }
 
       const data = await response.json();
+      console.log('Image uploaded successfully:', data);
       setEscudoUrl(data.secure_url);
     } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Error al subir la imagen. Por favor intenta nuevamente.');
+      console.error('Error uploading image to Cloudinary:', error);
+      alert(`Error al subir la imagen: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setIsUploadingImage(false);
     }
@@ -101,14 +114,28 @@ export default function EquipoForm({ equipo, onSuccess, onCancel }: EquipoFormPr
   const handleFormSubmit = async (data: EquipoFormData) => {
     try {
       const equipoData = {
-        ...data,
-        escudo: escudoUrl || '/default-team-logo.png', // URL por defecto si no hay escudo
+        nombre: data.nombre,
+        color: data.color,
+        torneoId: data.torneoId, // Mantener como string para updateEquipo
+        escudo: escudoUrl || '/default-team-logo.png',
       };
 
       if (equipo) {
         await dispatch(updateEquipo({ id: equipo.id, ...equipoData })).unwrap();
       } else {
-        await dispatch(createEquipo(equipoData)).unwrap();
+        // Para createEquipo, necesitamos convertir a TorneoInfo
+        const createData = {
+          ...equipoData,
+          jugadores: [],
+          puntos: 0,
+          golesAFavor: 0,
+          golesEnContra: 0,
+          diferenciaGoles: 0,
+          _id: '', // Se generará en el backend
+          __v: 0,
+          torneoId: { _id: data.torneoId, nombre: '' }, // Convertir string a TorneoInfo
+        };
+        await dispatch(createEquipo(createData)).unwrap();
       }
       onSuccess?.();
     } catch (error) {
@@ -299,16 +326,21 @@ export default function EquipoForm({ equipo, onSuccess, onCancel }: EquipoFormPr
           <div className="flex">
             <div className="ml-3">
               <h3 className="text-sm font-medium text-yellow-800">
-                Configuración de Cloudinary
+                Configuración de Cloudinary Requerida
               </h3>
               <div className="mt-2 text-sm text-yellow-700">
                 <p>
-                  Para que funcione la subida de imágenes, debes:
+                  Para que funcione la subida de imágenes, debes crear un archivo <code className="bg-yellow-100 px-1 rounded">.env.local</code> en la raíz del proyecto con:
                 </p>
-                <ol className="list-decimal list-inside mt-1 space-y-1">
-                  <li>Crear una cuenta en Cloudinary</li>
+                <div className="mt-2 bg-gray-100 p-2 rounded text-xs font-mono">
+                  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=tu-cloud-name-aqui<br/>
+                  NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=tu-upload-preset-aqui
+                </div>
+                <ol className="list-decimal list-inside mt-2 space-y-1">
+                  <li>Crear una cuenta en <a href="https://cloudinary.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Cloudinary</a></li>
                   <li>Configurar un upload preset público</li>
-                                     <li>Reemplazar &apos;your-cloud-name&apos; con tu Cloud Name</li>
+                  <li>Reemplazar los valores en el archivo .env.local</li>
+                  <li>Reiniciar el servidor de desarrollo</li>
                 </ol>
               </div>
             </div>

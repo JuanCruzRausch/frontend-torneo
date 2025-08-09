@@ -5,6 +5,8 @@ interface User {
   id: string;
   email: string;
   nombre: string;
+  apellido: string;
+  nombreCompleto: string;
   rol: string;
 }
 
@@ -30,7 +32,22 @@ export const login = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await axios.post('/auth/login', { email, password });
-      return response.data;
+      console.log('login: Raw response:', response.data);
+      
+      // Handle the new API response structure
+      if (response.data.success && response.data.data && response.data.token) {
+        console.log('login: Login data extracted:', {
+          user: response.data.data,
+          token: response.data.token
+        });
+        return {
+          user: response.data.data,
+          token: response.data.token
+        };
+      } else {
+        console.error('login: Invalid response structure:', response.data);
+        return rejectWithValue('Respuesta de API inválida');
+      }
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Error de login');
     }
@@ -41,9 +58,20 @@ export const getMe = createAsyncThunk(
   'auth/getMe',
   async (_, { rejectWithValue }) => {
     try {
+      console.log('getMe: Fetching user data...');
       const response = await axios.get('/auth/me');
-      return response.data;
+      console.log('getMe: Raw response:', response.data);
+      
+      // Handle the new API response structure
+      if (response.data.success && response.data.data) {
+        console.log('getMe: User data extracted:', response.data.data);
+        return response.data.data;
+      } else {
+        console.error('getMe: Invalid response structure:', response.data);
+        return rejectWithValue('Respuesta de API inválida');
+      }
     } catch (error: any) {
+      console.error('getMe: Error fetching user data:', error);
       return rejectWithValue(error.response?.data?.message || 'Error al obtener usuario');
     }
   }
@@ -89,14 +117,17 @@ const authSlice = createSlice({
       })
       // Get Me
       .addCase(getMe.pending, (state) => {
+        console.log('getMe: Pending...');
         state.isLoading = true;
       })
       .addCase(getMe.fulfilled, (state, action) => {
+        console.log('getMe: Fulfilled with user:', action.payload);
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
       })
       .addCase(getMe.rejected, (state, action) => {
+        console.error('getMe: Rejected with error:', action.payload);
         state.isLoading = false;
         state.error = action.payload as string;
         state.isAuthenticated = false;

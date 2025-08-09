@@ -25,16 +25,23 @@ export const isAuthenticated = (): boolean => {
   return !!getToken();
 };
 
-// Protected routes
-const protectedRoutes = ['/admin'];
-const authRoutes = ['/login'];
+// Protected routes - only protect API routes, not frontend routes
+const protectedApiRoutes = ['/api/admin', '/api/equipos', '/api/torneos', '/api/partidos', '/api/jugadores'];
+const authRoutes = ['/api/auth'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get('token')?.value;
+  
+  // Only apply middleware to API routes
+  if (!pathname.startsWith('/api/')) {
+    return NextResponse.next();
+  }
+
+  const token = request.cookies.get('token')?.value || 
+                request.headers.get('authorization')?.replace('Bearer ', '');
 
   // Check if the route is protected
-  const isProtectedRoute = protectedRoutes.some(route => 
+  const isProtectedRoute = protectedApiRoutes.some(route => 
     pathname.startsWith(route)
   );
 
@@ -43,19 +50,25 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  // Redirect to login if accessing protected route without token
+  // Redirect to login if accessing protected API route without token
   if (isProtectedRoute && !token) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.json(
+      { message: 'Acceso denegado. Token requerido.' },
+      { status: 401 }
+    );
   }
 
   // Redirect to admin if already authenticated and trying to access auth routes
   if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL('/admin', request.url));
+    return NextResponse.json(
+      { message: 'Ya estás autenticado.' },
+      { status: 400 }
+    );
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/api/:path*'],
 }; 

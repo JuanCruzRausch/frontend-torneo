@@ -2,13 +2,17 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../utils/axios';
 
 export interface Jugador {
+  _id: string;
   id: string;
   nombre: string;
   apellido: string;
-  posicion: string;
+  nombreCompleto: string;
+  dni: string;
+  fechaNacimiento: string;
+  posicion?: string;
+  numero?: number;
   dorsal?: number;
   equipoId: string;
-  fechaNacimiento?: string;
   nacionalidad?: string;
   altura?: number;
   peso?: number;
@@ -24,6 +28,7 @@ export interface Jugador {
   };
   createdAt: string;
   updatedAt: string;
+  __v?: number;
 }
 
 export interface Goleador extends Jugador {

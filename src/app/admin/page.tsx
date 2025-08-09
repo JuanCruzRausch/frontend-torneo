@@ -6,6 +6,7 @@ import { fetchTorneos, type Torneo } from '../../redux/slices/torneoSlice';
 import { fetchEquipos } from '../../redux/slices/equipoSlice';
 import { fetchPartidos } from '../../redux/slices/partidoSlice';
 import Link from 'next/link';
+import ProtectedRoute from '../../components/ProtectedRoute';
 
 export default function AdminPage() {
   const dispatch = useAppDispatch();
@@ -83,8 +84,9 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <ProtectedRoute requiredRole="admin">
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
@@ -227,5 +229,6 @@ export default function AdminPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 } 
