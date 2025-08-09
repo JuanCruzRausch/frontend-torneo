@@ -153,21 +153,22 @@ export default function AdminPage() {
               </div>
             ) : (
                              <div className="space-y-4">
-                 {torneos.slice(0, 3).map((torneo: Torneo) => (
-                  <div key={torneo.id} className="flex items-center justify-between border-b border-gray-200 pb-4">
+                                  {torneos.slice(0, 3).map((torneo: Torneo) => (
+                   <div key={torneo._id} className="flex items-center justify-between border-b border-gray-200 pb-4">
                     <div>
                       <h4 className="font-medium text-gray-900">{torneo.nombre}</h4>
                       <p className="text-sm text-gray-600">
                         {new Date(torneo.fechaInicio).toLocaleDateString('es-ES')}
                       </p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      torneo.estado === 'en_curso' ? 'bg-green-100 text-green-800' :
-                      torneo.estado === 'planificado' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {torneo.estado.replace('_', ' ').toUpperCase()}
-                    </span>
+                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                       torneo.estado === 'activo' ? 'bg-green-100 text-green-800' :
+                       torneo.estado === 'inactivo' ? 'bg-yellow-100 text-yellow-800' :
+                       'bg-gray-100 text-gray-800'
+                     }`}>
+                       {torneo.estado === 'activo' ? 'ACTIVO' :
+                        torneo.estado === 'inactivo' ? 'INACTIVO' : 'FINALIZADO'}
+                     </span>
                   </div>
                 ))}
               </div>

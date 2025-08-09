@@ -2,16 +2,28 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from '../../utils/axios';
 
 export interface Torneo {
-  id: string;
+  _id: string;
+  id?: string; // Para compatibilidad
   nombre: string;
   descripcion: string;
   fechaInicio: string;
   fechaFin: string;
-  estado: 'planificado' | 'en_curso' | 'finalizado';
-  maxEquipos: number;
-  reglamento: string;
+  estado: 'activo' | 'inactivo' | 'finalizado';
+  formato?: string;
+  zonas?: any[];
+  equipos?: any[];
+  creadoPor?: {
+    _id: string;
+    nombre: string;
+    email: string;
+    nombreCompleto: string;
+    id: string;
+  };
+  maxEquipos?: number;
+  reglamento?: string;
   createdAt: string;
   updatedAt: string;
+  __v?: number;
 }
 
 interface TorneoState {
@@ -34,7 +46,8 @@ export const fetchTorneos = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get('/torneos');
-      return response.data;
+      // Tu API devuelve los datos en response.data.data
+      return response.data.data || response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Error al cargar torneos');
     }
@@ -46,7 +59,7 @@ export const fetchTorneoById = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await axios.get(`/torneos/${id}`);
-      return response.data;
+      return response.data.data || response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Error al cargar torneo');
     }

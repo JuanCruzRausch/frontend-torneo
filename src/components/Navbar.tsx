@@ -24,26 +24,26 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-3">
-              <img 
-                src="/logo.png" 
-                alt="Torneo Misionero" 
-                className="w-18 h-18 object-contain"
-              />
-              <span className="text-xl font-bold text-white-900">Torneo Misionero</span>
+                              <img 
+                  src="/logo.png" 
+                  alt="Torneo Misionero" 
+                  className="w-12 h-12 object-contain"
+                />
+              <span className="text-xl font-bold text-white">Torneo Misionero</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/torneos" className="text-white-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Torneos
-            </Link>
-            <Link href="/goleadores" className="text-white-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Goleadores
-            </Link>
-            <Link href="/reglamento" className="text-white-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Reglamento
-            </Link>
+                      <div className="hidden md:flex items-center space-x-8">
+              <Link href="/torneos" className="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                Torneos
+              </Link>
+              <Link href="/goleadores" className="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                Goleadores
+              </Link>
+              <Link href="/reglamento" className="text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                Reglamento
+              </Link>
 
             {/* Auth Section */}
             {isAuthenticated ? (
@@ -61,19 +61,19 @@ export default function Navbar() {
                   </button>
                 </div>
               </div>
-            ) : (
-              <Link href="/login" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                Iniciar Sesión
-              </Link>
-            )}
-          </div>
+                          ) : (
+                <Link href="/login" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                  Iniciar Sesión
+                </Link>
+              )}
+            </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600"
-            >
+            {/* Mobile menu button */}
+            <div className="md:hidden flex items-center">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300"
+              >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -86,18 +86,18 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 pt-4 pb-4">
-            <div className="space-y-2">
-              <Link href="/torneos" className="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Torneos
-              </Link>
-              <Link href="/goleadores" className="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Goleadores
-              </Link>
-              <Link href="/reglamento" className="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Reglamento
-              </Link>
+                    {isMenuOpen && (
+              <div className="md:hidden border-t border-gray-600 pt-4 pb-4">
+                <div className="space-y-2">
+                  <Link href="/torneos" className="block text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                    Torneos
+                  </Link>
+                  <Link href="/goleadores" className="block text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                    Goleadores
+                  </Link>
+                  <Link href="/reglamento" className="block text-white hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                    Reglamento
+                  </Link>
 
               {isAuthenticated ? (
                 <div className="space-y-2 pt-2 border-t border-gray-200">
@@ -114,13 +114,13 @@ export default function Navbar() {
                     Salir
                   </button>
                 </div>
-              ) : (
-                <div className="pt-2 border-t border-gray-200">
-                  <Link href="/login" className="block bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                    Iniciar Sesión
-                  </Link>
-                </div>
-              )}
+                              ) : (
+                  <div className="pt-2 border-t border-gray-600">
+                    <Link href="/login" className="block bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                      Iniciar Sesión
+                    </Link>
+                  </div>
+                )}
             </div>
           </div>
         )}

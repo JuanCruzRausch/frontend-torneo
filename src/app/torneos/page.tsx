@@ -63,8 +63,8 @@ export default function TorneosPage() {
                 <span className="text-sm font-medium text-gray-700">Filtrar por estado:</span>
                 <select className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option value="">Todos</option>
-                  <option value="planificado">Planificado</option>
-                  <option value="en_curso">En Curso</option>
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
                   <option value="finalizado">Finalizado</option>
                 </select>
               </div>
@@ -85,18 +85,18 @@ export default function TorneosPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {torneos.map((torneo: Torneo) => (
-              <div key={torneo.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+              <div key={torneo._id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
                 {/* Tournament Header */}
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-xl font-semibold text-gray-900 truncate">{torneo.nombre}</h3>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      torneo.estado === 'en_curso' ? 'bg-green-100 text-green-800' :
-                      torneo.estado === 'planificado' ? 'bg-yellow-100 text-yellow-800' :
+                      torneo.estado === 'activo' ? 'bg-green-100 text-green-800' :
+                      torneo.estado === 'inactivo' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
-                      {torneo.estado === 'en_curso' ? 'EN CURSO' :
-                       torneo.estado === 'planificado' ? 'PRÓXIMO' : 'FINALIZADO'}
+                      {torneo.estado === 'activo' ? 'ACTIVO' :
+                       torneo.estado === 'inactivo' ? 'INACTIVO' : 'FINALIZADO'}
                     </span>
                   </div>
                   <p className="text-gray-600 text-sm line-clamp-2 mb-4">{torneo.descripcion}</p>
@@ -114,33 +114,33 @@ export default function TorneosPage() {
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <span className="mr-2">👥</span>
-                    <span>Máximo {torneo.maxEquipos} equipos</span>
+                    <span>{torneo.equipos?.length || 0} equipos</span>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="p-6 pt-0 space-y-2">
                   <Link 
-                    href={`/torneos/${torneo.id}`}
+                    href={`/torneos/${torneo._id}`}
                     className="block w-full text-center bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
                   >
                     Ver Detalles
                   </Link>
                   <div className="grid grid-cols-3 gap-2">
                     <Link 
-                      href={`/torneos/${torneo.id}/equipos`}
+                      href={`/torneos/${torneo._id}/equipos`}
                       className="text-center text-sm bg-gray-100 text-gray-700 py-1 rounded hover:bg-gray-200 transition-colors"
                     >
                       Equipos
                     </Link>
                     <Link 
-                      href={`/torneos/${torneo.id}/tabla`}
+                      href={`/torneos/${torneo._id}/tabla`}
                       className="text-center text-sm bg-gray-100 text-gray-700 py-1 rounded hover:bg-gray-200 transition-colors"
                     >
                       Tabla
                     </Link>
                     <Link 
-                      href={`/torneos/${torneo.id}/fixture`}
+                      href={`/torneos/${torneo._id}/fixture`}
                       className="text-center text-sm bg-gray-100 text-gray-700 py-1 rounded hover:bg-gray-200 transition-colors"
                     >
                       Fixture

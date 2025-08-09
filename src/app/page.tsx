@@ -56,30 +56,31 @@ export default function Home() {
               <p className="mt-4 text-gray-600">Cargando torneos...</p>
             </div>
           ) : (
-                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                {torneos.slice(0, 6).map((torneo: Torneo) => (
-                <div key={torneo.id} className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+                 <div key={torneo._id} className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-semibold text-gray-900">{torneo.nombre}</h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      torneo.estado === 'en_curso' ? 'bg-green-100 text-green-800' :
-                      torneo.estado === 'planificado' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {torneo.estado.replace('_', ' ').toUpperCase()}
-                    </span>
+                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                       torneo.estado === 'activo' ? 'bg-green-100 text-green-800' :
+                       torneo.estado === 'inactivo' ? 'bg-yellow-100 text-yellow-800' :
+                       'bg-gray-100 text-gray-800'
+                     }`}>
+                       {torneo.estado === 'activo' ? 'ACTIVO' :
+                        torneo.estado === 'inactivo' ? 'INACTIVO' : 'FINALIZADO'}
+                     </span>
                   </div>
                   <p className="text-gray-600 mb-4 line-clamp-2">{torneo.descripcion}</p>
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span>📅 {new Date(torneo.fechaInicio).toLocaleDateString()}</span>
-                    <span>👥 Max: {torneo.maxEquipos} equipos</span>
-                  </div>
-                  <Link 
-                    href={`/torneos/${torneo.id}`}
-                    className="block w-full text-center bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
-                  >
-                    Ver Detalles
-                  </Link>
+                                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                     <span>📅 {new Date(torneo.fechaInicio).toLocaleDateString()}</span>
+                     <span>👥 {torneo.equipos?.length || 0} equipos</span>
+                   </div>
+                   <Link 
+                     href={`/torneos/${torneo._id}`}
+                     className="block w-full text-center bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
+                   >
+                     Ver Detalles
+                   </Link>
                 </div>
               ))}
             </div>
