@@ -64,13 +64,34 @@ export default function EquipoDetailPage() {
     }
   };
 
+  // Función helper para manejar fechas y evitar problemas de zona horaria
+  const adjustDateForTimezone = (dateString: string): string => {
+    if (!dateString) return '';
+    
+    // Solución: compensar el offset de zona horaria agregando un día
+    // Esto contrarresta el problema donde la fecha aparece un día antes
+    const fecha = new Date(dateString);
+    fecha.setDate(fecha.getDate() + 1);
+    
+    // Retornar en formato ISO sin la parte de tiempo
+    return fecha.toISOString().split('T')[0];
+  };
+
   const handleAddPlayer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!equipo) return;
     
     try {
+      // Ajustar la fecha para evitar el problema de zona horaria
+      const fechaNacimiento = adjustDateForTimezone(playerForm.fechaNacimiento);
+      
+      // Debug: mostrar las fechas para verificar
+      console.log('Fecha original del formulario:', playerForm.fechaNacimiento);
+      console.log('Fecha ajustada:', fechaNacimiento);
+
       await dispatch(createJugador({
         ...playerForm,
+        fechaNacimiento,
         numero: playerForm.numero ? parseInt(playerForm.numero) : undefined,
         equipoId: equipo._id || equipo.id,
       } as any)).unwrap();
@@ -95,9 +116,17 @@ export default function EquipoDetailPage() {
     if (!editingPlayer) return;
     
     try {
+      // Ajustar la fecha para evitar el problema de zona horaria
+      const fechaNacimiento = adjustDateForTimezone(playerForm.fechaNacimiento);
+      
+      // Debug: mostrar las fechas para verificar
+      console.log('Fecha original del formulario (editar):', playerForm.fechaNacimiento);
+      console.log('Fecha ajustada (editar):', fechaNacimiento);
+
       await dispatch(updateJugador({ 
         id: editingPlayer._id || editingPlayer.id, 
         ...playerForm,
+        fechaNacimiento,
         numero: playerForm.numero ? parseInt(playerForm.numero) : undefined,
       })).unwrap();
       setEditingPlayer(null);
@@ -130,11 +159,18 @@ export default function EquipoDetailPage() {
 
   const startEditingPlayer = (player: Jugador) => {
     setEditingPlayer(player);
+    
+    // Debug: mostrar la fecha del jugador que se va a editar
+    console.log('Fecha del jugador a editar:', player.fechaNacimiento);
+    
+    const fechaFormateada = player.fechaNacimiento ? player.fechaNacimiento.split('T')[0] : '';
+    console.log('Fecha formateada para el formulario:', fechaFormateada);
+    
     setPlayerForm({
       nombre: player.nombre || '',
       apellido: player.apellido || '',
       dni: player.dni || '',
-      fechaNacimiento: player.fechaNacimiento ? player.fechaNacimiento.split('T')[0] : '',
+      fechaNacimiento: fechaFormateada,
       numero: player.numero?.toString() || '',
       posicion: player.posicion || '',
     });
@@ -206,9 +242,29 @@ export default function EquipoDetailPage() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div className="flex items-center mb-4 md:mb-0">
-              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mr-6">
-                {equipo.nombre?.substring(0, 2)?.toUpperCase() || 'EQ'}
-              </div>
+              {/* Mostrar escudo si existe, sino mostrar iniciales */}
+              {equipo.escudoUrl ? (
+                <div className="w-16 h-16 rounded-full overflow-hidden mr-6 border-2 border-gray-200">
+                  <img 
+                    src={equipo.escudoUrl} 
+                    alt={`Escudo de ${equipo.nombre}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback a iniciales si la imagen falla
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                  <div className="w-full h-full bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold hidden">
+                    {equipo.nombre?.substring(0, 2)?.toUpperCase() || 'EQ'}
+                  </div>
+                </div>
+              ) : (
+                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mr-6">
+                  {equipo.nombre?.substring(0, 2)?.toUpperCase() || 'EQ'}
+                </div>
+              )}
               <div>
                 {isEditingTeam && isAdmin ? (
                   <form onSubmit={handleUpdateTeam} className="space-y-2">

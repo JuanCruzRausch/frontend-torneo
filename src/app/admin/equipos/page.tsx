@@ -215,9 +215,29 @@ export default function AdminEquiposPage() {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex-1">
                     <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
-                        {(equipo.nombre || 'E').substring(0, 2).toUpperCase()}
-                      </div>
+                      {/* Mostrar escudo si existe, sino mostrar iniciales */}
+                      {equipo.escudoUrl ? (
+                        <div className="w-12 h-12 rounded-full overflow-hidden mr-4 border-2 border-gray-200">
+                          <img 
+                            src={equipo.escudoUrl} 
+                            alt={`Escudo de ${equipo.nombre}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback a iniciales si la imagen falla
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                          <div className="w-full h-full bg-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold hidden">
+                            {(equipo.nombre || 'E').substring(0, 2).toUpperCase()}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
+                          {(equipo.nombre || 'E').substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
                       <div>
                         <h3 className="text-xl font-semibold text-gray-900 mb-1">
                           {equipo.nombre || 'Sin nombre'}

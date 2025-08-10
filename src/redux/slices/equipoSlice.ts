@@ -28,6 +28,7 @@ export interface Equipo {
   golesEnContra: number;
   diferenciaGoles: number;
   escudo?: string;
+  escudoUrl?: string; // Campo adicional para la URL del escudo
   zonaId?: string;
   color?: string;
   fundacion?: string;

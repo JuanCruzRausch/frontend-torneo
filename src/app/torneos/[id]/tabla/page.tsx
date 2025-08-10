@@ -184,9 +184,29 @@ export default function TorneoTablaPage() {
                     {/* Team Name */}
                     <div className="col-span-4">
                       <div className="flex items-center">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
-                          {equipo.nombre.charAt(0)}
-                        </div>
+                        {/* Mostrar escudo si existe, sino mostrar iniciales */}
+                        {equipo.escudoUrl ? (
+                          <div className="w-8 h-8 rounded-full overflow-hidden mr-3 border border-gray-200">
+                            <img 
+                              src={equipo.escudoUrl} 
+                              alt={`Escudo de ${equipo.nombre}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // Fallback a iniciales si la imagen falla
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                            <div className="w-full h-full bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold hidden">
+                              {equipo.nombre.charAt(0)}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                            {equipo.nombre.charAt(0)}
+                          </div>
+                        )}
                         <div>
                           <Link 
                             href={`/equipos/${equipo._id}`}

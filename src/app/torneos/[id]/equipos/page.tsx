@@ -142,11 +142,31 @@ export default function TorneoEquiposPage() {
               <div key={equipo._id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
                 {/* Team Header */}
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white text-center">
-                  <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-2xl font-bold">
-                      {equipo.nombre.charAt(0)}
-                    </span>
-                  </div>
+                  {/* Mostrar escudo si existe, sino mostrar iniciales */}
+                  {equipo.escudoUrl ? (
+                    <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full overflow-hidden mx-auto mb-3 border-2 border-white border-opacity-30">
+                      <img 
+                        src={equipo.escudoUrl} 
+                        alt={`Escudo de ${equipo.nombre}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback a iniciales si la imagen falla
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                      <div className="w-full h-full bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white text-2xl font-bold hidden">
+                        {equipo.nombre.charAt(0)}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <span className="text-2xl font-bold">
+                        {equipo.nombre.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                   <h3 className="text-lg font-semibold truncate">{equipo.nombre}</h3>
                   <p className="text-blue-100 text-sm mt-1">Equipo #{index + 1}</p>
                 </div>

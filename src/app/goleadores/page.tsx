@@ -130,12 +130,24 @@ export default function GoleadoresPage() {
                     {/* Team */}
                     <div className="col-span-3">
                       <div className="flex items-center">
-                        {goleador.equipo?.escudo && (
+                        {goleador.equipo?.escudoUrl ? (
                           <img 
-                            src={goleador.equipo.escudo} 
+                            src={goleador.equipo.escudoUrl} 
                             alt={goleador.equipo.nombre}
-                            className="w-8 h-8 rounded-full mr-3"
+                            className="w-8 h-8 rounded-full mr-3 border border-gray-200"
+                            onError={(e) => {
+                              // Fallback a iniciales si la imagen falla
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.nextElementSibling?.classList.remove('hidden');
+                            }}
                           />
+                        ) : null}
+                        {/* Fallback a iniciales si no hay escudo */}
+                        {!goleador.equipo?.escudoUrl && (
+                          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                            {goleador.equipo?.nombre?.charAt(0) || 'E'}
+                          </div>
                         )}
                         <span className="font-medium text-gray-900">
                           {goleador.equipo?.nombre || 'Sin equipo'}

@@ -25,6 +25,7 @@ export interface Jugador {
     id: string;
     nombre: string;
     escudo: string;
+    escudoUrl?: string; // Campo adicional para la URL del escudo
   };
   createdAt: string;
   updatedAt: string;
