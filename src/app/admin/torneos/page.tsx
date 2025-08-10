@@ -268,7 +268,7 @@ export default function AdminTorneosPage() {
                   {/* Actions */}
                   <div className="mt-6 lg:mt-0 lg:ml-8 flex flex-col gap-3 lg:min-w-[200px]">
                     <Link 
-                      href={`/torneos/${torneo._id}`}
+                      href={`/admin/torneos/${torneo._id}`}
                       className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-center font-medium"
                     >
                       Ver Torneo

@@ -150,14 +150,14 @@ export default function TorneoDetailPage() {
             </div>
           </Link>
 
-          <Link href={`/torneos/${torneo._id}/tabla`}>
+          <Link href={`/torneos/${torneo._id}/zonas`}>
             <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer group">
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
-                  <span className="text-2xl">📊</span>
+                  <span className="text-2xl">🏆</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Tabla de Posiciones</h3>
-                <p className="text-gray-600 text-sm">Posiciones y estadísticas</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Zonas</h3>
+                <p className="text-gray-600 text-sm">Ver todas las zonas del torneo</p>
                 <div className="mt-3 text-green-600 font-medium">
                   {torneo.zonas?.length || 0} zona{(torneo.zonas?.length || 0) !== 1 ? 's' : ''}
                 </div>
